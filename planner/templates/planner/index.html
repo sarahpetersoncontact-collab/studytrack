@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StudyTrack</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            padding: 25px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #4338ca;
+        }
+
+        input, button {
+            padding: 12px;
+            margin: 7px 0;
+            width: 100%;
+        }
+
+        button {
+            background: #4338ca;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .task {
+            background: #eef2ff;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .completed {
+            border-left: 5px solid #16a34a;
+        }
+
+        .delete {
+            background: #dc2626;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 18px;
+                margin: 10px auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>📚 StudyTrack</h1>
+    <p>Your personal study planner.</p>
+
+    <h2>Add a Study Task</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <input name="title" placeholder="Task name" required maxlength="200">
+        <input name="subject" placeholder="Subject" required maxlength="100">
+        <input name="deadline" type="date" required>
+
+        <button type="submit">Add Task</button>
+    </form>
+
+    <h2>Your Tasks ({{ tasks|length }})</h2>
+
+    {% for task in tasks %}
+        <div class="task {% if task.completed %}completed{% endif %}">
+            <h3>{{ task.title }}</h3>
+            <p>Subject: {{ task.subject }}</p>
+            <p>Deadline: {{ task.deadline }}</p>
+
+            <p>
+                Status:
+                {% if task.completed %}
+                    Completed ✅
+                {% else %}
+                    Pending ⏳
+                {% endif %}
+            </p>
+
+            <form method="POST" action="{% url 'complete_task' task.id %}">
+                {% csrf_token %}
+                <button type="submit">
+                    {% if task.completed %}
+                        Mark Pending
+                    {% else %}
+                        Mark Completed
+                    {% endif %}
+                </button>
+            </form>
+
+            <form method="POST" action="{% url 'delete_task' task.id %}"
+                  onsubmit="return confirm('Delete this task?');">
+                {% csrf_token %}
+                <button class="delete" type="submit">Delete Task</button>
+            </form>
+        </div>
+    {% empty %}
+        <p>No tasks yet. Add your first study task!</p>
+    {% endfor %}
+
+</div>
+</body>
+</html>
