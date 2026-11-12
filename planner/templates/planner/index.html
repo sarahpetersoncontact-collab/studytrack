@@ -1,7 +1,9 @@
 
 <!DOCTYPE html>
 <html lang="en">
+<script src="{% static 'planner/script.js' %}" defer></script>
 <head>
+{% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>StudyTrack</title>
@@ -81,7 +83,7 @@
 
     <h2>Add a Study Task</h2>
 
-    <form method="POST">
+    <form method="POST" id="task-form">
         {% csrf_token %}
 
         <input name="title" placeholder="Task name" required maxlength="200">
@@ -119,7 +121,8 @@
                 </button>
             </form>
 
-            <form method="POST" action="{% url 'delete_task' task.id %}"
+            <form method="POST" class="delete-form" action="{% url 
+'delete_task' task.id %}">
                   onsubmit="return confirm('Delete this task?');">
                 {% csrf_token %}
                 <button class="delete" type="submit">Delete Task</button>
